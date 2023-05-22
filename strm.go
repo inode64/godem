@@ -34,7 +34,7 @@ func getDem(data string, lat, lon float64) (string, string) {
 	var fileStructure map[string][]string
 	_ = json.Unmarshal([]byte(data), &fileStructure)
 
-	lookupFile, _, _ := getSrtmFileNameAndCoordinates(lat, lon)
+	lookupFile := getSrtmFileNameAndCoordinates(lat, lon)
 
 	for zip, files := range fileStructure {
 		for _, file := range files {
@@ -47,7 +47,7 @@ func getDem(data string, lat, lon float64) (string, string) {
 	return "", ""
 }
 
-func getSrtmFileNameAndCoordinates(lat, lon float64) (string, float64, float64) {
+func getSrtmFileNameAndCoordinates(lat, lon float64) string {
 	northSouth := 'S'
 	if lat >= 0 {
 		northSouth = 'N'
@@ -61,9 +61,7 @@ func getSrtmFileNameAndCoordinates(lat, lon float64) (string, float64, float64) 
 	latPart := int(math.Abs(math.Floor(lat)))
 	lonPart := int(math.Abs(math.Floor(lon)))
 
-	srtmFileName := fmt.Sprintf("%s%02d%s%03d.hgt", string(northSouth), latPart, string(eastWest), lonPart)
-
-	return srtmFileName, math.Floor(lat), math.Floor(lon)
+	return fmt.Sprintf("%s%02d%s%03d.hgt", string(northSouth), latPart, string(eastWest), lonPart)
 }
 
 func loadContents(dem, zip, file string) (string, error) {
