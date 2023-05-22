@@ -40,7 +40,10 @@ func TestFindSrtmFileName(t *testing.T) {
 }
 
 func TestElevation(t *testing.T) {
-	ele, dem, err := godem.GetElevation(43.37012643, -8.39114853)
+	strm, err := godem.NewSrtm(nil)
+	assert.NoError(t, err)
+
+	ele, dem, err := strm.GetElevation(43.37012643, -8.39114853)
 	assert.NoError(t, err)
 	assert.Equal(t, ele, 20.0)
 	assert.Equal(t, dem, godem.DEM1)
