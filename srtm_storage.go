@@ -22,6 +22,7 @@ type SrtmLocalStorage interface {
 
 type LocalFileSrtmStorage struct {
 	cacheDirectory string
+	source         int
 }
 
 var _ SrtmLocalStorage = new(LocalFileSrtmStorage)
@@ -35,20 +36,31 @@ func makeDir(dir string) error {
 	return nil
 }
 
-func NewLocalFileSrtmStorage(cacheDirectory string) (*LocalFileSrtmStorage, error) {
-	if len(cacheDirectory) == 0 {
-		cacheDirectory = path.Join(os.Getenv("HOME"), ".cache", "godem")
+func NewLocalFileSrtmStorage(source int) (*LocalFileSrtmStorage, error) {
+	var cacheDirectory string
+	if source == SOURCE_VIEW {
+		cacheDirectory = filepath.Join(os.Getenv("HOME"), ".cache", "godem", "viewfinderpanoramas")
+	}
+	if source == SOURCE_GPXSEE {
+		cacheDirectory = filepath.Join(os.Getenv("HOME"), ".local", "share", "gpxsee", "DEM")
 	}
 
 	if err := makeDir(cacheDirectory); err != nil {
 		return nil, err
 	}
 
-	return &LocalFileSrtmStorage{cacheDirectory: cacheDirectory}, nil
+	return &LocalFileSrtmStorage{cacheDirectory: cacheDirectory, source: source}, nil
+}
+
+func (ds LocalFileSrtmStorage) getName(dem, zip, fn string) string {
+	if ds.source == SOURCE_VIEW {
+		return filepath.Join(ds.cacheDirectory, dem, zip, fn)
+	}
+	return filepath.Join(ds.cacheDirectory, fn)
 }
 
 func (ds LocalFileSrtmStorage) LoadFile(dem, zip, fn string) ([]byte, error) {
-	f, err := os.Open(path.Join(ds.cacheDirectory, dem, zip, fn))
+	f, err := os.Open(ds.getName(dem, zip, fn))
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +72,7 @@ func (ds LocalFileSrtmStorage) LoadFile(dem, zip, fn string) ([]byte, error) {
 }
 
 func (ds LocalFileSrtmStorage) FileExists(dem, zip, fn string) (string, error) {
-	f := path.Join(ds.cacheDirectory, dem, zip, fn)
+	f := path.Join(ds.getName(dem, zip, fn))
 	fi, err := os.Stat(f)
 	if err != nil {
 		return "", err
@@ -76,13 +88,11 @@ func (ds LocalFileSrtmStorage) IsNotExists(err error) bool {
 }
 
 func (ds LocalFileSrtmStorage) SaveFile(dem, zip, fn string, bytes []byte) error {
-	if err := makeDir(path.Join(ds.cacheDirectory, dem)); err != nil {
+	if err := makeDir(ds.getName(dem, zip, "")); err != nil {
 		return err
 	}
-	if err := makeDir(path.Join(ds.cacheDirectory, dem, zip)); err != nil {
-		return err
-	}
-	f, err := os.Create(path.Join(ds.cacheDirectory, dem, zip, fn))
+
+	f, err := os.Create(ds.getName(dem, zip, fn))
 	if err != nil {
 		return err
 	}
@@ -98,7 +108,7 @@ func (ds LocalFileSrtmStorage) Unzip(dem, fn string, data []byte) error {
 	}
 
 	for _, f := range zipReader.File {
-		filePath := filepath.Join(ds.cacheDirectory, dem, f.Name)
+		filePath := ds.getName(dem, f.Name, "")
 
 		if !strings.HasPrefix(filePath, filepath.Clean(ds.cacheDirectory)+string(os.PathSeparator)) {
 			continue

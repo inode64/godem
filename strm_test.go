@@ -9,7 +9,10 @@ import (
 )
 
 func checkSrtmFileName(t *testing.T, lat, lon float64, expectedZip, expectedFile, expectedDem string) {
-	dem, zip, file := godem.GetSrtm(lat, lon)
+	strm, err := godem.NewSrtm(godem.SOURCE_VIEW)
+	assert.NoError(t, err)
+
+	dem, zip, file := strm.GetSrtm(lat, lon)
 	log.Printf("Checking Lat: %f Lon: %f", lat, lon)
 	if file != expectedFile {
 		t.Errorf("SRTM FILE for (%v, %v) should be %s but is %s", lat, lon, expectedFile, file)
@@ -40,7 +43,7 @@ func TestFindSrtmFileName(t *testing.T) {
 }
 
 func TestElevation(t *testing.T) {
-	strm, err := godem.NewSrtm(nil)
+	strm, err := godem.NewSrtm(godem.SOURCE_VIEW)
 	assert.NoError(t, err)
 
 	ele, dem, err := strm.GetElevation(43.37012643, -8.39114853)
