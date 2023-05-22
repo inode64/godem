@@ -28,7 +28,7 @@ var _ SrtmLocalStorage = new(LocalFileSrtmStorage)
 
 func makeDir(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err := os.Mkdir(dir, os.ModeDir|0700); err != nil {
+		if err := os.MkdirAll(dir, os.ModeDir|0700); err != nil {
 			return err
 		}
 	}
@@ -37,7 +37,7 @@ func makeDir(dir string) error {
 
 func NewLocalFileSrtmStorage(cacheDirectory string) (*LocalFileSrtmStorage, error) {
 	if len(cacheDirectory) == 0 {
-		cacheDirectory = path.Join(os.Getenv("HOME"), ".godem")
+		cacheDirectory = path.Join(os.Getenv("HOME"), ".cache", "godem")
 	}
 
 	if err := makeDir(cacheDirectory); err != nil {
