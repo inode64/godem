@@ -38,6 +38,30 @@ Source Viewfinder
 
 ** Make with [gpxchart](https://github.com/tkrajina/gpxchart)
 
+## Usage
+
+```golang
+package main
+
+import (
+	"fmt"
+
+	"github.com/inode64/godem"
+)
+
+func main() {
+	srtm, err := godem.NewSrtm(godem.SOURCE_ESA)
+	if err != nil {
+		panic(err.Error())
+	}
+	elevation, dem, err := srtm.GetElevation(http.DefaultClient, 43.37012643, -8.39114853)
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println("A coruña elevation is", elevation)
+}
+```
+
 ## Getting Started
 
 Detailed instructions on how to install and use the library will be provided soon. Stay tuned!
