@@ -41,6 +41,9 @@ func NewLocalFileSrtmStorage(source int) (*LocalFileSrtmStorage, error) {
 	if source == SOURCE_VIEW {
 		cacheDirectory = filepath.Join(os.Getenv("HOME"), ".cache", "godem", "viewfinderpanoramas")
 	}
+	if source == SOURCE_ESA {
+		cacheDirectory = filepath.Join(os.Getenv("HOME"), ".cache", "godem", "esa")
+	}
 	if source == SOURCE_GPXSEE {
 		cacheDirectory = filepath.Join(os.Getenv("HOME"), ".local", "share", "gpxsee", "DEM")
 	}

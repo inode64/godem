@@ -12,7 +12,7 @@ func checkSrtmFileName(t *testing.T, lat, lon float64, expectedZip, expectedFile
 	strm, err := godem.NewSrtm(godem.SOURCE_VIEW)
 	assert.NoError(t, err)
 
-	dem, zip, file := strm.GetSrtm(lat, lon)
+	dem, zip, file, _ := strm.GetSrtm(lat, lon)
 	log.Printf("Checking Lat: %f Lon: %f", lat, lon)
 	if file != expectedFile {
 		t.Errorf("SRTM FILE for (%v, %v) should be %s but is %s", lat, lon, expectedFile, file)
@@ -52,6 +52,14 @@ func TestElevation(t *testing.T) {
 	assert.Equal(t, dem, godem.DEM1)
 
 	strm, err = godem.NewSrtm(godem.SOURCE_GPXSEE)
+	assert.NoError(t, err)
+
+	ele, dem, err = strm.GetElevation(43.37012643, -8.39114853)
+	assert.NoError(t, err)
+	assert.Equal(t, ele, 27.0)
+	assert.Equal(t, dem, godem.DEM1)
+
+	strm, err = godem.NewSrtm(godem.SOURCE_ESA)
 	assert.NoError(t, err)
 
 	ele, dem, err = strm.GetElevation(43.37012643, -8.39114853)
