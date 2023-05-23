@@ -24,6 +24,10 @@ Moreover, with caching functionality, the library also ensures efficient use of 
 
 ## Comparison of results with different sources
 
+Original
+![2023-03-05_09-27_Sun gpx](https://github.com/inode64/godem/assets/1045720/ca172b27-44eb-4728-b599-024e8623da63)
+---
+
 Source ESA
 ![2023-03-05_09-27_Sun esa](https://github.com/inode64/godem/assets/1045720/81cd059d-2f68-455e-8114-f0e0adab12fc)
 ---
