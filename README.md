@@ -22,6 +22,20 @@ By incorporating GDAL for interpolation, our library brings together two powerfu
 
 Moreover, with caching functionality, the library also ensures efficient use of resources, saving both time and space during subsequent data processing.
 
+## Comparison of results with different sources
+
+Source ESA
+![2023-03-05_09-27_Sun esa](https://github.com/inode64/godem/assets/1045720/81cd059d-2f68-455e-8114-f0e0adab12fc)
+---
+
+Source GPXSEE
+![2023-03-05_09-27_Sun gpxsee](https://github.com/inode64/godem/assets/1045720/4b225f39-f83b-4ca0-9473-479bb96b0707)
+---
+
+Source Viewfinder
+![2023-03-05_09-27_Sun view](https://github.com/inode64/godem/assets/1045720/69dc6208-c8c8-4d71-8537-0b4811f35f9b)
+---
+
 ## Getting Started
 
 Detailed instructions on how to install and use the library will be provided soon. Stay tuned!
