@@ -36,6 +36,8 @@ Source Viewfinder
 ![2023-03-05_09-27_Sun view](https://github.com/inode64/godem/assets/1045720/69dc6208-c8c8-4d71-8537-0b4811f35f9b)
 ---
 
+** Make with [gpxchart](https://github.com/tkrajina/gpxchart)
+
 ## Getting Started
 
 Detailed instructions on how to install and use the library will be provided soon. Stay tuned!
