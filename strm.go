@@ -40,8 +40,7 @@ func NewSrtm(source int) (*Srtm, error) {
 func (self *Srtm) GetSrtm(lat, lon float64) (string, string, string) {
 	if self.source == SOURCE_GPXSEE {
 		file := getSrtmFileNameAndCoordinates(lat, lon)
-		latPart := int(math.Abs(math.Floor(lat)))
-		return fmt.Sprintf("%02d", latPart), file, file
+		return getLat2Coordinates(lat), file, file
 	}
 	zip, file := getDem(dem1, lat, lon)
 	if len(zip) != 0 {
@@ -73,24 +72,33 @@ func getDem(data string, lat, lon float64) (string, string) {
 }
 
 func getSrtmFileNameAndCoordinates(lat, lon float64) string {
+	return fmt.Sprintf("%s%s.hgt", getLat2Coordinates(lat), getLon2Coordinates(lon))
+}
+
+func getLat2Coordinates(lat float64) string {
 	northSouth := 'S'
 	if lat >= 0 {
 		northSouth = 'N'
 	}
 
+	latPart := int(math.Abs(math.Floor(lat)))
+
+	return fmt.Sprintf("%s%02d", string(northSouth), latPart)
+}
+
+func getLon2Coordinates(lon float64) string {
 	eastWest := 'W'
 	if lon >= 0 {
 		eastWest = 'E'
 	}
 
-	latPart := int(math.Abs(math.Floor(lat)))
 	lonPart := int(math.Abs(math.Floor(lon)))
 
-	return fmt.Sprintf("%s%02d%s%03d.hgt", string(northSouth), latPart, string(eastWest), lonPart)
+	return fmt.Sprintf("%s%03d", string(eastWest), lonPart)
 }
 
-func (self *Srtm) loadContents(dem, zip, file string) (string, error) {
-	path, err := self.storage.FileExists(dem, zip, file)
+func (self *Srtm) loadContents(dem, zip, file string) error {
+	_, err := self.storage.FileExists(dem, zip, file)
 	if err != nil {
 		client := http.Client{
 			CheckRedirect: func(r *http.Request, via []*http.Request) error {
@@ -101,21 +109,21 @@ func (self *Srtm) loadContents(dem, zip, file string) (string, error) {
 
 		resp, err := client.Get(self.getUrl(dem, zip))
 		if err != nil {
-			return path, err
+			return err
 		}
 		defer resp.Body.Close()
 
 		fileInArchiveBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return path, err
+			return err
 		}
 
 		if err = self.storage.Unzip(dem, zip, fileInArchiveBytes); err != nil {
-			return path, err
+			return err
 		}
 	}
 
-	return path, nil
+	return nil
 }
 
 func (self *Srtm) getUrl(dem, zip string) string {
@@ -131,9 +139,16 @@ func (self *Srtm) GetElevation(lat, lon float64) (float64, string, error) {
 	if len(dem) == 0 {
 		return 0, "", fmt.Errorf("no dem found")
 	}
-	path, err := self.loadContents(dem, zip, file)
+	err := self.loadContents(dem, zip, file)
 	if err != nil {
 		return 0, "", err
+	}
+	path, err := self.storage.FileExists(dem, zip, file)
+	if err != nil {
+		return 0, "", err
+	}
+	if self.source == SOURCE_GPXSEE {
+		dem = DEM1
 	}
 
 	ele, err := GetElevationFromLocalFile(path, lat, lon)

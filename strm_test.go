@@ -50,4 +50,12 @@ func TestElevation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, ele, 20.0)
 	assert.Equal(t, dem, godem.DEM1)
+
+	strm, err = godem.NewSrtm(godem.SOURCE_GPXSEE)
+	assert.NoError(t, err)
+
+	ele, dem, err = strm.GetElevation(43.37012643, -8.39114853)
+	assert.NoError(t, err)
+	assert.Equal(t, ele, 27.0)
+	assert.Equal(t, dem, godem.DEM1)
 }

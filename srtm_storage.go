@@ -108,35 +108,37 @@ func (ds LocalFileSrtmStorage) Unzip(dem, fn string, data []byte) error {
 	}
 
 	for _, f := range zipReader.File {
-		filePath := ds.getName(dem, f.Name, "")
+		var filePath string
+		if ds.source == SOURCE_VIEW {
+			filePath = ds.getName(dem, f.Name, "")
+		} else {
+			filePath = ds.getName("", "", f.Name)
+		}
 
 		if !strings.HasPrefix(filePath, filepath.Clean(ds.cacheDirectory)+string(os.PathSeparator)) {
 			continue
 		}
 		if f.FileInfo().IsDir() {
-			if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
-				panic(err)
-			}
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
-			panic(err)
+		if err := makeDir(filepath.Dir(filePath)); err != nil {
+			return err
 		}
 
 		dstFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		fileInArchive, err := f.Open()
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		if _, err := io.Copy(dstFile, fileInArchive); err != nil {
 
-			panic(err)
+			return err
 		}
 
 		dstFile.Close()
