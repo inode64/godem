@@ -65,6 +65,9 @@ func main() {
 	fmt.Println("A coruña elevation is", elevation)
 }
 ```
+## Requirements
+
+* [GDAL](https://gdal.org/)
 
 ## Getting Started
 
