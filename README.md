@@ -69,9 +69,6 @@ func main() {
 
 * [GDAL](https://gdal.org/)
 
-## Getting Started
-
-Detailed instructions on how to install and use the library will be provided soon. Stay tuned!
 
 ---
 
